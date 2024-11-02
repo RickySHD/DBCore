@@ -25,4 +25,6 @@ public interface Connection {
     List<DataRow> executeQuery(@NotNull String query, Object... arguments);
 
     int executeStatement(@NotNull String query, Object... arguments);
+
+    int executeFile(@NotNull String path);
 }

@@ -3,6 +3,7 @@ package dev.rickyshd.dbcore;
 import dev.rickyshd.dbcore.exceptions.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 
@@ -105,5 +106,25 @@ class SimpleConnection implements Connection {
         } catch (SQLException e) {
             throw new DatabaseAccessException(e);
         }
+    }
+
+    @Override
+    public int executeFile(@NotNull String path) {
+        File file = new File(path);
+        String queries;
+
+        try (InputStream in = new FileInputStream(file)) {
+            queries = new String(in.readAllBytes());
+        } catch (FileNotFoundException e) {
+            throw new QueryFileMissingException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        int res = 0;
+        for (String query : queries.split(";"))
+            res += executeStatement(query);
+
+        return res;
     }
 }
