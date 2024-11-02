@@ -13,12 +13,12 @@ class H2Database extends Database {
 
     H2Database() {
         super(null);
-        this.dataSource = getDataSource(String.format("jdbc:h2:mem:db%d;DATABASE_TO_UPPER=false", DBID++));
+        this.dataSource = getDataSource(String.format("jdbc:h2:mem:db%d;DATABASE_TO_UPPER=false;mode=MySQL", DBID++));
     }
 
     H2Database(String filename) {
         super(filename);
-        this.dataSource = getDataSource(String.format("jdbc:h2:file:%s;DATABASE_TO_UPPER=false", filename));
+        this.dataSource = getDataSource(String.format("jdbc:h2:file:%s;DATABASE_TO_UPPER=false;mode=MySQL", filename));
     }
 
     @Override
