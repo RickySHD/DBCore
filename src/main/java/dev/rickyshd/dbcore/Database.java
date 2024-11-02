@@ -9,6 +9,7 @@ public abstract class Database implements ConnectionProvider {
 
     protected Database(@Nullable String filename) {
         this.filename = filename;
+        loadDriver();
     }
 
     public static Database h2() {
@@ -22,6 +23,8 @@ public abstract class Database implements ConnectionProvider {
     public String filename() {
         return filename;
     }
+
+    abstract void loadDriver();
 
     abstract public void close();
 

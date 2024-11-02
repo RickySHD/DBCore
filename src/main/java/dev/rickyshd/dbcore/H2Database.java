@@ -2,6 +2,7 @@ package dev.rickyshd.dbcore;
 
 import com.zaxxer.hikari.HikariConfig;
 import dev.rickyshd.dbcore.exceptions.DatabaseAccessException;
+import dev.rickyshd.dbcore.exceptions.DatabaseDriverNotFoundException;
 import org.h2.jdbcx.JdbcDataSource;
 
 import java.sql.SQLException;
@@ -18,6 +19,15 @@ class H2Database extends Database {
     H2Database(String filename) {
         super(filename);
         this.dataSource = getDataSource(String.format("jdbc:h2:file:%s;DATABASE_TO_UPPER=false", filename));
+    }
+
+    @Override
+    void loadDriver() {
+        try {
+            Class.forName("org.h2.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new DatabaseDriverNotFoundException("JDBC driver '%s' not found.");
+        }
     }
 
     @Override
