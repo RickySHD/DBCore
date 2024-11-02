@@ -1,5 +1,6 @@
 package dev.rickyshd.dbcore;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -74,7 +75,7 @@ public class DataRowBase implements DataRow {
     }
 
     public Date getDatetime(String label, ZoneOffset offset) {
-        return Date.from(get(label, LocalDateTime.class).toInstant(offset));
+        return Date.from((get(label, Timestamp.class)).toLocalDateTime().toInstant(offset));
     }
 
     @Override
