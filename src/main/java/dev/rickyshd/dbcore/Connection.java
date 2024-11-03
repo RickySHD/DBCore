@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface Connection {
+public interface Connection extends AutoCloseable {
 
     static Connection connection(java.sql.Connection connection) {
         return new SimpleConnection(connection);
@@ -15,8 +15,6 @@ public interface Connection {
     }
 
     boolean isAlive();
-
-    void close();
 
     void commit();
 
