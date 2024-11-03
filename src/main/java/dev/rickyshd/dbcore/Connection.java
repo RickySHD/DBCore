@@ -14,6 +14,8 @@ public interface Connection extends AutoCloseable {
         return new TransactionalConnection(connection);
     }
 
+    void close();
+
     boolean isAlive();
 
     void commit();
