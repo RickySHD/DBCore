@@ -2,6 +2,8 @@ package dev.rickyshd.dbcore;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.time.ZoneOffset;
 import java.util.*;
 
@@ -23,8 +25,15 @@ public interface DataRow {
     <T> T get(String label, Class<T> type);
 
     String getString(String label);
-    
+
+    Reader getClob(String label);
+
+    @Deprecated
     byte[] getBinary(String label);
+
+    byte[] getBytes(String label);
+
+    InputStream getBlob(String label);
     
     boolean getBoolean(String label);
 

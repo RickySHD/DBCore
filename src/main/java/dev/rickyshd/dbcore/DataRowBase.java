@@ -1,7 +1,7 @@
 package dev.rickyshd.dbcore;
 
+import java.io.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -36,12 +36,47 @@ public class DataRowBase implements DataRow {
 
     @Override
     public String getString(String label) {
+        if (content.get(label) instanceof Reader reader) return getClobString(reader);
         return get(label, String.class);
     }
 
     @Override
+    public Reader getClob(String label) {
+        Object o = content.get(label);
+        if (o == null) return null;
+        return get(label, Reader.class);
+    }
+
+    private String getClobString(Reader reader) {
+        try (StringWriter writer = new StringWriter()) {
+            reader.transferTo(writer);
+            return writer.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public byte[] getBinary(String label) {
+        return getBytes(label);
+    }
+
+    public byte[] getBytes(String label) {
+        if (content.get(label) instanceof InputStream stream) return getBlobBytes(stream);
         return get(label, byte[].class);
+    }
+
+    @Override
+    public InputStream getBlob(String label) {
+        return get(label, InputStream.class);
+    }
+
+    private byte[] getBlobBytes(InputStream stream) {
+        try (stream) {
+            return stream.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

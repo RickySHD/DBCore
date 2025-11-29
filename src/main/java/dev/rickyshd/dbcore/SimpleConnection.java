@@ -51,7 +51,14 @@ class SimpleConnection implements Connection {
 
                 // fill prepared statement
                 int i = 1;
-                for (Object arg : arguments) stmt.setObject(i++, arg);
+                for (Object arg : arguments) {
+                    if (arg instanceof LargeObjectWrapper.StringReaderLargeObjectWrapper clob)
+                        stmt.setCharacterStream(i++, clob.reader());
+                    else if (arg instanceof LargeObjectWrapper.InputStreamLargeObjectWrapper blob)
+                        stmt.setBinaryStream(i++, blob.stream());
+                    else
+                        stmt.setObject(i++, arg);
+                }
 
                 ResultSet resultSet = stmt.executeQuery();
                 ResultSetMetaData metaData = resultSet.getMetaData();
@@ -64,7 +71,16 @@ class SimpleConnection implements Connection {
 
                 while (resultSet.next()) {
                     LinkedHashMap<String, Object> m = new LinkedHashMap<>();
-                    for (String label : labels) m.put(label, resultSet.getObject(label));
+
+                    for (String label : labels) {
+                        int columnType = metaData.getColumnType(labels.indexOf(label) + 1);
+                        if (columnType == Types.CLOB)
+                            m.put(label, resultSet.getCharacterStream(label));
+                        else if (columnType == Types.BLOB)
+                            m.put(label, resultSet.getBinaryStream(label));
+                        else
+                            m.put(label, resultSet.getObject(label));
+                    }
 
                     result.add(DataRow.of(m));
                 }
@@ -91,7 +107,14 @@ class SimpleConnection implements Connection {
 
                 // fill prepared statement
                 int i = 1;
-                for (Object arg : arguments) stmt.setObject(i++, arg);
+                for (Object arg : arguments) {
+                    if (arg instanceof LargeObjectWrapper.StringReaderLargeObjectWrapper clob)
+                        stmt.setCharacterStream(i++, clob.reader());
+                    else if (arg instanceof LargeObjectWrapper.InputStreamLargeObjectWrapper blob)
+                        stmt.setBinaryStream(i++, blob.stream());
+                    else
+                        stmt.setObject(i++, arg);
+                }
 
                 if (stmt.execute()) throw new QueryExecutedAsStatementException(stmt.toString());
                 int updateCount = stmt.getUpdateCount();
